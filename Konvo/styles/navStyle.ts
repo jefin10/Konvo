@@ -1,6 +1,18 @@
 import { StyleSheet } from "react-native";
 
 const st = StyleSheet.create({
+  searchButton: {
+    marginLeft: 10,
+    backgroundColor: "#5D3EA4",
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 5,
+  },
+  searchButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 14,
+  },
     navStyle: {
       backgroundColor: "#120135",
       paddingVertical: 15,
@@ -35,6 +47,8 @@ const st = StyleSheet.create({
       borderRadius: 20,
       paddingHorizontal: 10,
       elevation: 3,
+      flexDirection:"row",
+      justifyContent:"space-between"
     },
     searchBar: {
       height: 40,

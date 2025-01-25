@@ -12,46 +12,45 @@ import {
   ActivityIndicator,
   Alert
 } from 'react-native';
-import AppNavigator from './AppNavigator';
-import { chatOfPerson } from '@/api/apiService';
 import { Link, useRouter } from 'expo-router';
-import Chats from './Chats';
+import { registerUser } from '@/api/apiService';
 
 const { width } = Dimensions.get('window');
 
-
-const Login = () => {
+const Signin = () => {
   const [username, setUsername] = useState('');
+  const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false); 
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleLogin = async () => {
-    if (!username || !password) {
-      Alert.alert('Error', 'Please enter both username and password');
+  const handleSignin = async () => {
+    if (!username || !userId|| !password || !confirmPassword) {
+      Alert.alert('Error', 'Please fill in all fields');
       return;
     }
-  
+
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
+      return;
+    }
+
     setIsLoading(true);
     try {
-      const response = await chatOfPerson(username, password);
-      console.log('Full Login response:', response);
-      console.log('Login response data:', response.data);
+      const response = await registerUser(username,userId, password);
       
-      if (response.status === 200 && response.data) {
-        
+      if (response.status === 201) {
+        Alert.alert('Success', 'Account created successfully');
         router.replace({
-          pathname: '/Chats',
-          params: { userId: username }
+          pathname: '/Login',
         });
-        
       }
     } catch (error) {
-      console.error('Login error full:', error);
-      console.error('Login error response:', error.response);
+      console.error('Signin error:', error);
       Alert.alert(
-        'Login Failed',
-        'Invalid username or password'
+        'Signin Failed',
+        error.response?.data?.message || 'Unable to create account'
       );
     } finally {
       setIsLoading(false);
@@ -69,7 +68,16 @@ const Login = () => {
           source={require('@/assets/message.jpg')} 
           style={styles.logo}
         />
-        <Text style={styles.title}>Konvo</Text>
+        <Text style={styles.title}>Create Account</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="User Id"
+          placeholderTextColor="#aaa"
+          value={userId}
+          onChangeText={setUserId}
+          autoCapitalize="none"
+          editable={!isLoading}
+        />
         <TextInput
           style={styles.input}
           placeholder="Username"
@@ -88,30 +96,35 @@ const Login = () => {
           onChangeText={setPassword}
           editable={!isLoading}
         />
+        <TextInput
+          style={styles.input}
+          placeholder="Confirm Password"
+          placeholderTextColor="#aaa"
+          secureTextEntry
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          editable={!isLoading}
+        />
         <TouchableOpacity 
-          style={[styles.loginButton, isLoading && styles.loginButtonDisabled]}
-          onPress={handleLogin}
+          style={[styles.signinButton, isLoading && styles.signinButtonDisabled]}
+          onPress={handleSignin}
           disabled={isLoading}
         >
           {isLoading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.loginButtonText}>Log In</Text>
+            <Text style={styles.signinButtonText}>Sign In</Text>
           )}
         </TouchableOpacity>
         <Text style={styles.loginLink}>
-                  Don't have an account - <Link href="/Signin">Sign in</Link>
-                </Text>
+          Already have an account - <Link href="/Login">Log In</Link>
+        </Text>
       </SafeAreaView>
     </>
   );
 };
 
 const styles = StyleSheet.create({
-  loginLink: {
-    color: '#fff',
-    marginTop: 15,
-  },
   container: {
     flex: 1,
     backgroundColor: '#120135',
@@ -141,7 +154,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 20,
   },
-  loginButton: {
+  signinButton: {
     width: '80%',
     height: 50,
     backgroundColor: '#5D3EA4',
@@ -149,14 +162,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  loginButtonText: {
+  signinButtonText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
   },
-  loginButtonDisabled: {
+  signinButtonDisabled: {
     opacity: 0.7,
   },
+  loginLink: {
+    color: '#fff',
+    marginTop: 15,
+  }
 });
 
-export default Login;
+export default Signin;

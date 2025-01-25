@@ -14,6 +14,7 @@ export const registerUser = async (userId, username, password) => {
 };
 
 export const sendMessage = async (userId, chatPerson, text) => {
+  console.log("inside send m essage");
   return api.post("/send-message", { userId, chatPerson, text });
 };
 
@@ -22,11 +23,12 @@ export const fetchChatsWithPerson = async (userId, chatPerson) => {
 };
 
 export const fetchUserChats = async (userId) => {
-  return api.get(`/chat/${userId}`);
+  console.log("heyy its her");
+  return api.get(`/chats/${userId}`);
 };
 export const chatOfPerson = async (userId, password) => {
   try {
-    console.log("heyy its here");
+    
 
     const response = await api.get(`/chat/${userId}/${password}`);
     return response;
@@ -34,4 +36,9 @@ export const chatOfPerson = async (userId, password) => {
     console.log('API error:', error.response || error);
     throw error; 
   }
+};
+
+
+export const searchChats = async (query) => {
+  return api.get(`/search/${query}`);
 };

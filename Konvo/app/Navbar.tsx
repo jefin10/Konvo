@@ -1,11 +1,15 @@
 import React, { useState } from "react";
-import { View, Text, Image, TextInput, StyleSheet } from "react-native";
+import { View, Text, Image, TextInput, TouchableOpacity } from "react-native";
 import st from "@/styles/navStyle";
-import i1 from '@/assets/images/1.jpg'
 
-
-const Navbar = () => {
+const Navbar = ({ handleSearch }) => {
   const [search, setSearch] = useState("");
+
+  const onSearch = () => {
+    if (handleSearch && search.trim() !== "") {
+      handleSearch(search.trim());
+    }
+  };
 
   return (
     <View style={st.navStyle}>
@@ -25,6 +29,9 @@ const Navbar = () => {
           value={search}
           onChangeText={(text) => setSearch(text)}
         />
+        <TouchableOpacity style={st.searchButton} onPress={onSearch}>
+          <Text style={st.searchButtonText}>Search</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
